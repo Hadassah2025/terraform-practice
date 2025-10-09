@@ -70,4 +70,4 @@ jobs:
           name: tfplan
 
       - name: Terraform Apply
-        run: terraform apply -var-file=terraform.tfvars -input=false tfplan
+        run: terraform apply -input=false tfplan
