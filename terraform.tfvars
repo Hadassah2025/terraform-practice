@@ -1,0 +1,6 @@
+region = "eu-north-1"
+project_name = "tf-net"
+vpc_cidr = "10.20.0.0/16"
+public_subnet_cidr = "10.20.10.0/24"
+private_subnet_cidr = "10.20.30.0/24"
+availability_zone = "eu-north-1a"

@@ -2,7 +2,6 @@
 .terraform/
 *.tfstate
 *.tfstate.backup
-*.tfvars
 crash.log
 override.tf
 override.tf.json
@@ -15,8 +14,6 @@ terraform.rc
 .terraform.lock.hcl
 
 # Sensitive variable files
-*.tfvars
-*.tfvars.json
 
 # CLI local config
 .terraform.d/
@@ -29,8 +26,6 @@ Thumbs.db
 .DS_Store
 
 # IDEs and editors
-.vscode/
-/.idea/
 *.suo
 *.user
 *.userosscache
