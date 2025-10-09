@@ -1,0 +1,42 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfvars
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+
+# Terraform lock file
+.terraform.lock.hcl
+
+# Sensitive variable files
+*.tfvars
+*.tfvars.json
+
+# CLI local config
+.terraform.d/
+
+# Local .env files
+.env
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# IDEs and editors
+.vscode/
+/.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Windows file history
+ehthumbs.db
+Icon?
+12:13 pm
