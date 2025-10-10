@@ -2,11 +2,16 @@ terraform {
     required_providers {
         aws = {
             source = "hashicorp/aws"
+        
         }
     }
 
+    backend "s3" {
+        bucket = "hadassah-s3bucket"
+        key    = "terraform.tfstate"
+        region = "eu-north-1"
+    }
 }
-
 
 
 
