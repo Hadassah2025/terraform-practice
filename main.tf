@@ -30,12 +30,12 @@ module "vpc" {
   availability_zone    = var.availability_zone
 }
 
- output "vpc_id" {
-    value = aws_vpc.demo_vpc.id
-  }
-  output "public_subnet_id" {
-    value = aws_subnet.public_subnet.id
-  }
-  output "private_subnet_id" {
-    value = aws_subnet.private_subnet.id
-  }
+output "vpc_id" {
+  value = module.vpc.vpc_id
+}
+output "public_subnet_id" {
+  value = module.vpc.public_subnet_id
+}
+output "private_subnet_id" {
+  value = module.vpc.private_subnet_id
+}
