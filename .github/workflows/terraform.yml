@@ -3,12 +3,25 @@ name: Terraform
 on:
   push:
     branches: [ main ]
-  workflow_dispatch: {}
+  pull_request:
+    types: [closed]
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Action to perform'
+        required: true
+        default: 'apply'
+        type: choice
+        options:
+        - apply
+        - destroy
 
 jobs:
   terraform-plan:
     name: Terraform Plan
     runs-on: ubuntu-latest
+    if: github.event_name == 'push'
     env:
       TF_IN_AUTOMATION: true
     steps:
@@ -39,45 +52,10 @@ jobs:
           name: tfplan
           path: tfplan
 
-  terraform-plan-destroy:
-    name: Terraform Plan Destroy
-    runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch'
-    env:
-      TF_IN_AUTOMATION: true
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: "1.5.0"
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-
-      - name: Terraform Init
-        run: terraform init -input=false
-
-      - name: Terraform Plan Destroy
-        run: terraform plan -var-file=terraform.tfvars -destroy -out=tfplan-destroy -input=false
-
-      - name: Upload destroy plan artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: tfplan-destroy
-          path: tfplan-destroy
-
   terraform-apply:
-    name: Terraform Apply (manual)
-    needs: terraform-plan
+    name: Terraform Apply
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch'
+    if: (github.event_name == 'pull_request' && github.event.pull_request.merged == true) || (github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'apply')
     env:
       TF_IN_AUTOMATION: true
     steps:
@@ -96,22 +74,19 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Download plan artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: tfplan
-
       - name: Terraform Init
         run: terraform init -input=false
+
+      - name: Terraform Plan
+        run: terraform plan -var-file=terraform.tfvars -out=tfplan -input=false
 
       - name: Terraform Apply
         run: terraform apply -input=false tfplan
 
   terraform-destroy:
-    name: Terraform Destroy (manual)
-    needs: terraform-plan-destroy
+    name: Terraform Destroy
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.action == 'destroy'
     env:
       TF_IN_AUTOMATION: true
     steps:
@@ -130,13 +105,8 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Download destroy plan artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: tfplan-destroy
-
       - name: Terraform Init
         run: terraform init -input=false
 
-      - name: Terraform Apply Destroy Plan
-        run: terraform apply -input=false tfplan-destroy
+      - name: Terraform Destroy
+        run: terraform destroy -var-file=terraform.tfvars -auto-approve
