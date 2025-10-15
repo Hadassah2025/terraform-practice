@@ -45,12 +45,4 @@ resource "aws_subnet" "private_subnet" {
     route_table_id = aws_route_table.public_rt.id
   }
 
-  output "vpc_id" {
-    value = aws_vpc.demo_vpc.id
-  }
-  output "public_subnet_id" {
-    value = aws_subnet.public_subnet.id
-  }
-  output "private_subnet_id" {
-    value = aws_subnet.private_subnet.id
-  }
+ 
